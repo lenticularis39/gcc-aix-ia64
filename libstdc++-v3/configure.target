@@ -1,0 +1,149 @@
+# configure.target
+
+# This shell script handles all target based configuration for libstdc++.
+# It sets various shell variables based on the the target and the
+# configuration options.  You can modify this shell script without
+# needing to rerun autoconf.
+
+# This shell script should be invoked as
+#   . configure.target
+# If it encounters an error, it will exit with a message.
+
+# It uses the following shell variables:
+#   target                The configuration target
+#   target_cpu            The configuration target CPU
+#   target_os             The configuration target OS
+#   target_optspace       --enable-target-optspace ("yes", "no", "")
+
+# It possibly modifies the following shell variables:
+#   cpu_include_dir        CPU-specific include directory, relative to srcdir
+#   os_include_dir         OS-specific include directory, relative to srcdir
+
+
+# Set any CPU dependent compiler flags.
+# THIS TABLE IS SORTED.  KEEP IT THAT WAY.
+
+case "${target_cpu}" in
+  alpha*)
+    cpu_include_dir="config/cpu/alpha"
+    ;;
+  arm*)
+    cpu_include_dir="config/cpu/arm"
+    ;;
+  ia64)
+    cpu_include_dir="config/cpu/ia64"
+    ;;
+  i386)
+    cpu_include_dir="config/cpu/i386"
+    ;;
+  i486 | i586 | i686 | i786)
+    cpu_include_dir="config/cpu/i486"
+    ;;
+  m68k | m680[246]0)
+    cpu_include_dir="config/cpu/m68k"
+    ;;
+  mips*)
+    cpu_include_dir="config/cpu/mips"
+    ;;
+  powerpc | rs6000)
+    cpu_include_dir="config/cpu/powerpc"
+    ;;
+  s390 | s390x)
+    cpu_include_dir="config/cpu/s390"
+    ;;
+  sparc64 | ultrasparc)
+    cpu_include_dir="config/cpu/sparc/sparc64"
+    ;;
+  sparc*)
+    cpu_include_dir="config/cpu/sparc/sparc32"
+    ;;
+  *)
+    cpu_include_dir="config/cpu/generic"
+    ;;
+esac
+
+
+# Set any OS dependent compiler flags.
+# THIS TABLE IS SORTED.  KEEP IT THAT WAY.
+
+case "${target_os}" in
+  aix4.[3456789]* | aix[56789]*)
+    os_include_dir="config/os/aix"
+    ;;
+  bsd* | freebsd* )
+    os_include_dir="config/os/bsd/freebsd"
+    ;;
+  cygwin*)
+    os_include_dir="config/os/newlib"
+    ;;
+  *djgpp*)
+    os_include_dir="config/os/djgpp"
+    ;;
+  linux* | gnu*)
+    os_include_dir="config/os/gnu-linux"
+    ;;
+  irix[1-6] | irix[1-5].* | irix6.[0-4])
+   # This is known to work on at least IRIX 5.2 and 6.3.
+   os_include_dir="config/os/irix/irix5.2"
+   ;;
+  irix6.5)
+    os_include_dir="config/os/irix/irix6.5"
+    ;;
+  netbsd*)
+    os_include_dir="config/os/bsd/netbsd"
+    ;;
+  solaris2.5*)
+    os_include_dir="config/os/solaris/solaris2.5"
+    ;;
+  solaris2.6*)
+    os_include_dir="config/os/solaris/solaris2.6"
+    ;;
+  solaris2.7* | solaris2.8*)
+    os_include_dir="config/os/solaris/solaris2.7"
+    ;;
+  hpux)
+    os_include_dir="config/os/hpux"
+    ;;
+  *)
+    os_include_dir="config/os/generic"
+    ;;
+esac
+
+
+# Set any flags dependant on the full target triplet.
+# THIS TABLE IS SORTED.  KEEP IT THAT WAY.
+
+case "${target}" in
+   *-*-aix[456789]*)
+     # We set os_include_dir to config/os/aix only on AIX 4.3 and
+     # newer, but config/os/aix/bits/atomicity.h works on earlier
+     # versions of AIX 4.*, so we explicitly duplicate the directory
+     # here, because os_include_dir.
+     ATOMICITYH=config/os/aix
+     ;;
+   *-*-aix*)
+     ATOMICITYH=config/cpu/generic
+     ;;
+   *-*-irix*)
+     ATOMICITYH=$os_include_dir
+     ;;
+   *)
+     ATOMICITYH=$cpu_include_dir
+     ;;
+esac
+
+# Set LIMITSH to the directory where the configuration-dependent
+# limits.h can be found.
+# THIS TABLE IS SORTED.  KEEP IT THAT WAY.
+
+case "${target}" in
+   i?86-*-*)
+     LIMITSH=config/cpu/i386
+     ;;
+   powerpc-*-*)
+     LIMITSH=config/cpu/powerpc
+     ;;
+   *)
+     LIMITSH=config/cpu/generic
+     ;;
+esac

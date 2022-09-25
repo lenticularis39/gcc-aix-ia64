@@ -1,0 +1,91 @@
+2001-04-06
+
+Release Notes   
+-------------
+The Standard C++ Library v3, or libstdc++-2.9x, is an ongoing
+project to implement the ISO 14882 Standard C++ library as described
+in chapters 17 through 27 and annex D, as a drop-in replacement
+for the current (ARM-conformant) library.
+
+This is the eleventh snapshot of the libstdc++ rewrite.  It is still
+incomplet and incorrekt. It's a lot less incomplete and incorrect than
+some of the earlier snapshots though, and quite usable.
+
+The Standard C++ Library v3, or libstdc++-2.9x, follows an open
+development model, attempting to be fully buzzword, bazaar, and GNU
+compliant. Full details on participating, including contributor
+guidelines, mailing list subscription, mailing list archives,
+up-to-date documentation, and various and sundry other details can be
+found at the following URL:
+
+  http://gcc.gnu.org/libstdc++/
+
+
+New: 
+--- 
+- preliminary doxygen documentation has been added. Running "make
+  doxygen" in the libstdc++-v3 build directory will generate HTML
+  documentation that can be used to cross-reference names and files in
+  the library.
+- a dejagnu based testing framework has been added
+- a new implementation of the concept checking code has been ported
+  from the boost libraries.
+- support for -fno-exceptions has been added
+- stdexcept was re-written
+- using deprecated or antiquated headers now gives a warning
+- the stdio interface to iostreams has been tweaked, and now works
+  with synchronized c/c++ io
+- new libsupc++ routines implementing the IA-64 C++ ABI.
+- HPUX configuration files
+- support for AIX added
+- a lot of bugs were fixed.
+- preliminary named locales implemented
+- portability improvements made to generation of <limits>
+- speedups to improve configuration time.
+- DJGPP support added.
+- support for dlopening shared libstdc++
+
+What doesn't:
+-------------
+- see BUGS.
+
+ 
+Build and Install
+-----------------
+Up to date build and install directions can be found at:
+http://gcc.gnu.org/libstdc++/install.html
+
+
+Contact:
+--------
+Places have changed from previous snapshots.  The web page, which has
+information about joining the mailing list and searching its archives,
+CVS access, and contribution information is now at:
+
+  http://gcc.gnu.org/libstdc++/
+
+Please note that the mailing list has recently moved, and is now
+hosted on gcc.gnu.org. (The web site above has the most
+up-to-date info.)
+   
+Obtain the library snapshot via ftp (including these release notes) from
+
+  ftp://gcc.gnu.org/pub/libstdc++/
+
+The library is maintained by Benjamin Kosnik, Gabriel
+Dos Reis, Phil Edwards, and Ulrich Drepper.  
+
+
+Development tools:
+------------------
+
+You will need a recent version of gcc to compile the snapshot of
+libstdc++. The use of CVS gcc, or gcc-3_0-branch is strongly
+recommended, which may introduce additional dependencies for
+up-to-date binutils. In addition, you may need up-to-date tools for
+modifying Makefiles and regenerating configure scripts: automake
+(version 1.4), autoconf (version 2.13 and higher), and libtool.
+
+
+
+

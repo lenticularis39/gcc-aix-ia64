@@ -1,0 +1,14 @@
+@c Copyright (C) 1995, 1996, 1997, 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+@c This is part of the G77 manual.
+@c For copying conditions, see the file g77.texi.
+
+@set last-update-install 2001-06-10
+
+@include root.texi
+
+@node Installation
+@chapter Installing GNU Fortran
+@cindex installing, GNU Fortran
+
+The information describing how to install @code{g77} is contained
+in the @value{which-gcc} installation procedures.

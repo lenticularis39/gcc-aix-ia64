@@ -1,0 +1,314 @@
+# Process this file with autoconf to produce a configure script, like so:
+# aclocal, autoconf, autoheader, automake
+
+AC_PREREQ(2.13)
+AC_INIT(src/ios.cc)
+
+# When building with srcdir == objdir, links to the source files will
+# be created in directories within the target_subdir.  We have to
+# adjust toplevel_srcdir accordingly, so that configure finds
+# install-sh and other auxiliary files that live in the top-level
+# source directory.
+if test "${srcdir}" = "."; then
+  if test -z "${with_target_subdir}"; then
+    toprel=".."
+  else
+    if test "${with_target_subdir}" != "."; then
+      toprel="${with_multisrctop}../.."
+    else
+      toprel="${with_multisrctop}.."
+    fi
+  fi
+else
+  toprel=".."
+fi
+AC_CONFIG_AUX_DIR(${srcdir}/$toprel)
+toplevel_srcdir=\${top_srcdir}/$toprel
+AC_SUBST(toplevel_srcdir)
+
+dnl This is here just to satisfy automake.
+ifelse(not,equal,[AC_CONFIG_AUX_DIR(..)])
+
+# Gets and sets build, host, target, *_vendor, *_cpu, *_os, etc.
+# AC 2.50 sets target_alias iff the user specified --target, but we use it
+# everywhere, so we set it here just to be sure.
+AC_CANONICAL_SYSTEM
+target_alias=${target_alias-$target}
+AC_SUBST(target_alias)
+
+# Will set LN_S to either 'ln -s' or 'ln'.  With autoconf 2.50+, can also
+# be 'cp -p' if linking isn't available.
+AC_PROG_LN_S
+
+# We use these options to decide which functions to include.
+AC_ARG_WITH(target-subdir,
+[  --with-target-subdir=SUBDIR
+                           configuring in a subdirectory])
+AC_ARG_WITH(cross-host,
+[  --with-cross-host=HOST  configuring with a cross compiler])
+
+# Runs configure.host and configure.target. Have to run this before
+# the GLIBCPP_ENABLE_* macros below.
+GLIBCPP_CONFIGURE(.)
+
+AC_LIBTOOL_DLOPEN
+AM_PROG_LIBTOOL
+AC_SUBST(enable_shared)
+AC_SUBST(enable_static)
+GLIBCPP_CHECK_GNU_MAKE
+
+AM_CONFIG_HEADER(config.h)
+
+# Check for c++ or library specific bits that don't require linking.
+GLIBCPP_CHECK_COMPILER_VERSION
+
+# Enable all the crazy c++ stuff.  C_MBCHAR must come early.
+GLIBCPP_ENABLE_DEBUG($USE_MAINTAINER_MODE)
+GLIBCPP_ENABLE_CSTDIO
+GLIBCPP_ENABLE_CLOCALE
+GLIBCPP_ENABLE_C_MBCHAR([yes])
+GLIBCPP_ENABLE_C99([yes])
+GLIBCPP_ENABLE_LONG_LONG([yes])
+GLIBCPP_ENABLE_CHEADERS([c_std])
+GLIBCPP_ENABLE_THREADS
+GLIBCPP_ENABLE_CXX_FLAGS([none])
+GLIBCPP_ENABLE_SJLJ_EXCEPTIONS
+
+if test -n "$with_cross_host" || test x"$build" != x"$host"; then
+
+  # We are being configured with some form of cross compiler.
+  # mknumeric_limits may not work correctly, either because the
+  # compiler may not run on this machine, may not be able to link
+  # executables, or may produce executables we can't run on this
+  # machine.
+  GLIBCPP_IS_CROSS_COMPILING=1
+
+  # If Canadian cross, then don't pick up tools from the build
+  # directory.
+  if test -n "$with_cross_host" && test x"$build" != x"$with_cross_host"; then
+    CANADIAN=yes
+  else
+    CANADIAN=no
+  fi
+
+  case "$target_alias" in
+    *-linux*)
+	# Construct linux crosses by hand, eliminating bits that need ld...
+        # Check for available headers.
+        AC_CHECK_HEADERS([nan.h ieeefp.h endian.h sys/isa_defs.h \
+	machine/endian.h machine/param.h sys/machine.h fp.h locale.h \
+	float.h inttypes.h])
+
+	# GLIBCPP_CHECK_COMPILER_FEATURES
+	SECTION_FLAGS='-ffunction-sections -fdata-sections'
+	AC_SUBST(SECTION_FLAGS)
+	GLIBCPP_CHECK_LINKER_FEATURES
+	# GLIBCPP_CHECK_BUILTIN_MATH_SUPPORT
+	# GLIBCPP_CHECK_MATH_SUPPORT
+	AC_DEFINE(HAVE_ACOSF)
+	AC_DEFINE(HAVE_ASINF)
+	AC_DEFINE(HAVE_ATAN2F)
+	AC_DEFINE(HAVE_ATANF)
+	AC_DEFINE(HAVE_CEILF)
+	AC_DEFINE(HAVE_COPYSIGN)
+	AC_DEFINE(HAVE_COPYSIGNF)
+	AC_DEFINE(HAVE_COSF)
+	AC_DEFINE(HAVE_COSHF)
+	AC_DEFINE(HAVE_EXPF)
+	AC_DEFINE(HAVE_FABSF)
+	AC_DEFINE(HAVE_FINITE)
+	AC_DEFINE(HAVE_FINITEF)
+	AC_DEFINE(HAVE_FLOORF)
+	AC_DEFINE(HAVE_FMODF)
+	AC_DEFINE(HAVE_FREXPF)
+	AC_DEFINE(HAVE_ISINF)
+	AC_DEFINE(HAVE_ISINFF)
+	AC_DEFINE(HAVE_ISNAN)
+	AC_DEFINE(HAVE_ISNANF)
+	AC_DEFINE(HAVE_LDEXPF)
+	AC_DEFINE(HAVE_LOG10F)
+	AC_DEFINE(HAVE_LOGF)
+	AC_DEFINE(HAVE_MODFF)
+	AC_DEFINE(HAVE_POWF)
+	AC_DEFINE(HAVE_SINCOS)
+	AC_DEFINE(HAVE_SINCOSF)
+	AC_DEFINE(HAVE_SINF)
+	AC_DEFINE(HAVE_SINHF)
+	AC_DEFINE(HAVE_SQRTF)
+	AC_DEFINE(HAVE_TANF)
+	AC_DEFINE(HAVE_TANHF)
+
+	# At some point, we should differentiate between architectures
+	# like x86, which have long double versions, and alpha/powerpc/etc.,
+	# which don't. For the time being, punt.
+	if test x"long_double_math_on_this_cpu" = x"yes"; then
+	  AC_DEFINE(HAVE_ACOSL)
+	  AC_DEFINE(HAVE_ASINL)
+	  AC_DEFINE(HAVE_ATAN2L)
+	  AC_DEFINE(HAVE_ATANL)
+	  AC_DEFINE(HAVE_CEILL)
+	  AC_DEFINE(HAVE_COPYSIGNL)
+	  AC_DEFINE(HAVE_COSL)
+	  AC_DEFINE(HAVE_COSHL)
+	  AC_DEFINE(HAVE_EXPL)
+	  AC_DEFINE(HAVE_FABSL)
+	  AC_DEFINE(HAVE_FINITEL)
+	  AC_DEFINE(HAVE_FLOORL)
+	  AC_DEFINE(HAVE_FMODL)
+	  AC_DEFINE(HAVE_FREXPL)
+	  AC_DEFINE(HAVE_ISINFL)
+	  AC_DEFINE(HAVE_ISNANL)
+	  AC_DEFINE(HAVE_LDEXPL)
+	  AC_DEFINE(HAVE_LOG10L)
+	  AC_DEFINE(HAVE_LOGL)
+	  AC_DEFINE(HAVE_MODFL)
+	  AC_DEFINE(HAVE_POWL)
+	  AC_DEFINE(HAVE_SINCOSL)
+	  AC_DEFINE(HAVE_SINL)
+	  AC_DEFINE(HAVE_SINHL)
+	  AC_DEFINE(HAVE_SQRTL)
+	  AC_DEFINE(HAVE_TANL)
+	  AC_DEFINE(HAVE_TANHL)
+	fi
+	GLIBCPP_CHECK_COMPLEX_MATH_SUPPORT
+	GLIBCPP_CHECK_WCHAR_T_SUPPORT
+	os_include_dir="config/os/gnu-linux"
+	# GLIBCPP_CHECK_STDLIB_SUPPORT
+	AC_DEFINE(HAVE_STRTOF)        
+	AC_DEFINE(HAVE_STRTOLD)        
+	# AC_FUNC_MMAP
+	AC_DEFINE(HAVE_MMAP)
+	;;
+    *)
+	# We assume newlib.  This lets us hard-code the functions we know
+	# we'll have.
+	AC_DEFINE(HAVE_FINITE)
+	AC_DEFINE(HAVE_ISNAN)
+	AC_DEFINE(HAVE_ISNANF)
+	AC_DEFINE(HAVE_ISINF)
+	AC_DEFINE(HAVE_ISINFF)
+
+	os_include_dir="config/os/newlib"
+
+	# need to check for faster f versions of math functions, ie sinf?
+	;;
+  esac
+else
+
+  # We are being configured natively. We can do more elaborate tests
+  # that include AC_TRY_COMPILE now, as the linker is assumed to be
+  # working.
+  GLIBCPP_IS_CROSS_COMPILING=0
+  CANADIAN=no
+
+  # Check for available headers.
+  AC_CHECK_HEADERS([nan.h ieeefp.h endian.h sys/isa_defs.h machine/endian.h \
+  machine/param.h sys/machine.h fp.h locale.h float.h inttypes.h gconv.h])
+
+  GLIBCPP_CHECK_COMPILER_FEATURES
+  GLIBCPP_CHECK_LINKER_FEATURES
+  GLIBCPP_CHECK_BUILTIN_MATH_SUPPORT
+  GLIBCPP_CHECK_MATH_SUPPORT
+  GLIBCPP_CHECK_COMPLEX_MATH_SUPPORT
+  GLIBCPP_CHECK_WCHAR_T_SUPPORT
+  GLIBCPP_CHECK_STDLIB_SUPPORT
+
+  AC_TRY_COMPILE([
+#include <setjmp.h>
+], [sigjmp_buf env; while (! sigsetjmp (env, 1)) siglongjmp (env, 1);],
+[AC_DEFINE(HAVE_SIGSETJMP, 1, [Define if sigsetjmp is available.  ])])
+
+  AC_FUNC_MMAP
+fi
+
+# Propagate the target-specific source directories through the build chain.
+OS_INC_SRCDIR=$os_include_dir/bits
+ATOMICITY_INC_SRCDIR=$ATOMICITYH/bits
+LIMITS_INC_SRCDIR=$LIMITSH/bits
+AC_SUBST(OS_INC_SRCDIR)
+AC_SUBST(ATOMICITY_INC_SRCDIR)
+AC_SUBST(LIMITS_INC_SRCDIR)
+
+# Set up cross-compile flags
+AC_SUBST(GLIBCPP_IS_CROSS_COMPILING)
+AM_CONDITIONAL(CANADIAN, test "$CANADIAN" = yes)
+ 
+AC_CACHE_SAVE
+AC_LC_MESSAGES
+
+if test "${multilib}" = "yes"; then
+  multilib_arg="--enable-multilib"
+else
+  multilib_arg=
+fi
+
+# Needed so that g++ can find the correct include subdir automatically.
+INTERFACE=v3
+
+# Export all the install information
+GLIBCPP_EXPORT_INSTALL_INFO
+
+# Export all the include and flag information to makefiles.
+GLIBCPP_EXPORT_INCLUDES
+GLIBCPP_EXPORT_FLAGS
+
+if ${CONFIG_SHELL-/bin/sh} ./libtool --tag CXX --features |
+   grep "enable shared" > /dev/null; then
+  LIBSUPCXX_PICFLAGS=-prefer-pic
+else
+  LIBSUPCXX_PICFLAGS=
+fi
+AC_SUBST(LIBSUPCXX_PICFLAGS)
+
+# Generate the various Makefiles, include files, and scripts.
+# NB: Multilibs need MULTISUBDIR defined correctly in src/Makefile.am
+# and libsupc++/Makefile.am so that multilib installs will end up
+# installed in the correct place. To work around this not being passed
+# down from config-ml.in -> top_srcdir/Makefile.am ->
+# top_srcdir/{src,libsupc++}/Makefile.am, manually append it here.
+AC_OUTPUT(Makefile \
+    include/Makefile src/Makefile \
+    libmath/Makefile libio/Makefile libsupc++/Makefile \
+    testsuite/Makefile mkcheck testsuite_flags,
+[if test -n "$CONFIG_FILES"; then
+  ac_file=Makefile . ${glibcpp_basedir}/../config-ml.in
+  grep '^MULTISUBDIR =' Makefile >> src/Makefile
+  grep '^MULTISUBDIR =' Makefile >> libsupc++/Makefile
+fi
+chmod +x mkcheck
+chmod +x testsuite_flags
+],
+srcdir=${srcdir}
+host=${host}
+target=${target}
+with_multisubdir=${with_multisubdir}
+ac_configure_args="${multilib_arg} ${ac_configure_args}"
+CONFIG_SHELL=${CONFIG_SHELL-/bin/sh}
+glibcpp_basedir=${glibcpp_basedir}
+CC="${CC}"
+CXX="${CXX}"
+)
+
+
+# Sanity checking & User-visible messages.
+# Checks down here, otherwise they get scrolled off before
+# the user will notice.
+
+# Trying to get more people to read documentation.  Possibly remove
+# check and warn all the time. There is no "informational" AC_MSG_
+# macro, so these are going to be printed even when --quiet/--silent
+# is given.
+if test ! -f stamp-sanity-warned; then
+  touch stamp-sanity-warned
+  echo ""
+  echo "Please make certain that you read the installation information here:"
+  echo "  faster => ${srcdir}/docs/install.html"
+  echo "  slower => <URL:http://gcc.gnu.org/onlinedocs/libstdc++/install.html>"
+  echo ""
+  echo "and the configuration information here:"
+  echo "  faster => ${srcdir}/docs/configopts.html"
+  echo "  slower => <URL:http://gcc.gnu.org/onlinedocs/libstdc++/configopts.html>"
+  echo ""
+  echo "before proceeding with ${_cv_gnu_make_command}."
+  echo ""
+fi
