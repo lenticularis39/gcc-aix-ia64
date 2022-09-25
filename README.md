@@ -26,7 +26,4 @@ $ make install
 
 ## Issues
 
-There are a few issues preventing a successfull build:
-- cc1 crashes with a segmentation fault on a simple source file
-
-Also see Issues in GitHub repository.
+See Issues in GitHub repository.
