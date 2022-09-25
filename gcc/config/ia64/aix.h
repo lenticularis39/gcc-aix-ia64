@@ -242,12 +242,10 @@ extern unsigned int ia64_section_threshold;
   while (0)
 
 /* Override ia64/sysv4.h setting with that used by AIX5. */
+/* Note: on 32-bit AIX programs, wchar is short, but the compiler currently only
+   supports 64-bit binaries */
 #undef WCHAR_TYPE
-#ifdef __64BIT__
 #define WCHAR_TYPE "unsigned int"
-#else
-#define WCHAR_TYPE "unsigned short"
-#endif
 
 /* Have to get rid of the system's definition so that we can use gcc's
    instead. */
