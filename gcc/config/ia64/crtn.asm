@@ -41,7 +41,7 @@
 	;;
 	mov	ar.pfs = r34
 	mov	b0 = r33
-	.restore sp
+	//.restore sp
 	mov	r12 = r35
 	br.ret.sptk.many b0
 
@@ -49,7 +49,7 @@
 	;;
 	mov	ar.pfs = r34
 	mov	b0 = r33
-	.restore sp
+	//.restore sp
 	mov	r12 = r35
 	br.ret.sptk.many b0
 
