@@ -1654,6 +1654,15 @@ ia64*-*-hpux*)
 	fi
 	float_format=i386
 	;;
+ia64*-*-aix*)
+	tm_file="${tm_file} svr4.h ia64/sysv4.h ia64/aix.h"
+	tmake_file="ia64/t-ia64 ia64/t-aix"
+	target_cpu_default="MASK_GNU_AS|MASK_GNU_LD"
+	if test $machine = $target; then
+		target_requires_64bit_host_wide_int=yes
+	fi
+	float_format=i386
+	;;
 m32r-*-elf*)
 	extra_parts="crtinit.o crtfini.o"
 	;;
