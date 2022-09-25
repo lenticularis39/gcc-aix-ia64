@@ -11306,7 +11306,7 @@ ffecom_get_invented_identifier (const char *pattern, ...)
   return decl;
 }
 
-ffeinfoBasictype
+ffeinfoKindtype
 ffecom_gfrt_basictype (ffecomGfrt gfrt)
 {
   assert (gfrt < FFECOM_gfrt);
