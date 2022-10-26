@@ -94,13 +94,6 @@ typedef unsigned int USItype	__attribute__ ((mode (SI)));
 /* These typedefs are usually forbidden on archs with UNITS_PER_WORD 2 */
 typedef		 int DItype	__attribute__ ((mode (DI)));
 typedef unsigned int UDItype	__attribute__ ((mode (DI)));
-/* We cannot represent a TItype constant on a machine with 32-bit
-   HOST_WIDE_INTs, so it doesn't make sense to define these types.  */
-#if MIN_UNITS_PER_WORD > 4 && HOST_BITS_PER_WIDE_INT >= 64
-/* These typedefs are usually forbidden on archs with UNITS_PER_WORD 4 */
-typedef		 int TItype	__attribute__ ((mode (TI)));
-typedef unsigned int UTItype	__attribute__ ((mode (TI)));
-#endif
 #endif
 #endif
 
@@ -157,17 +150,7 @@ typedef int word_type __attribute__ ((mode (__word__)));
 
 /* We can only support a Wtype that fits within a HOST_WIDE_INT.  Otherwise,
    DWtype overflows the tree and RTL types.  */
-#if MIN_UNITS_PER_WORD > 4 && HOST_BITS_PER_WIDE_INT >= 64
-#define W_TYPE_SIZE (8 * BITS_PER_UNIT)
-#define Wtype	DItype
-#define UWtype	UDItype
-#define HWtype	DItype
-#define UHWtype	UDItype
-#define DWtype	TItype
-#define UDWtype	UTItype
-#define __NW(a,b)	__ ## a ## di ## b
-#define __NDW(a,b)	__ ## a ## ti ## b
-#elif MIN_UNITS_PER_WORD > 2 \
+#if MIN_UNITS_PER_WORD > 2 \
       || (MIN_UNITS_PER_WORD > 1 && LONG_LONG_TYPE_SIZE > 32)
 #define W_TYPE_SIZE (4 * BITS_PER_UNIT)
 #define Wtype	SItype
